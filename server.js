@@ -12,6 +12,14 @@ async function readFile() {
     let data = await fs.readFile(pathToFile, 'utf8');
     return JSON.parse(data);
 }
+async function readFileWithDelay(){
+    await new Promise((resolve,reject)=>{
+        setTimeout(resolve,1500)
+    })
+
+    let products = await readFile();
+    return products
+}
 
 app.get('/products', async (req, res) => {
     try{
@@ -25,14 +33,6 @@ app.get('/products', async (req, res) => {
         console.log(err)
     }
 });
-async function readFileWithDelay(){
-    await new Promise((resolve,reject)=>{
-        setTimeout(resolve,1500)
-    })
-
-    let products = await readFile();
-    return products
-}
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
