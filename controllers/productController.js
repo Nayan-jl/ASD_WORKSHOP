@@ -1,7 +1,5 @@
 const productService = require("../services/productService");
-const {
-    setCache
-} = require("../middleware/cache");
+const {setCache, invalidateCache} = require("../middleware/cache");
 async function getProducts(req, res) {
     try {
         let products = await productService.getProducts();
@@ -34,7 +32,21 @@ async function getProductById(req, res) {
         });
     }
 }
+async function createProduct(req, res) {
+    try {
+        let product =
+            await productService.createProduct(req.body);
+        invalidateCache();
+        res.status(201).json(product);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: "Server error"
+        });
+    }
+}
 module.exports = {
     getProducts,
-    getProductById
+    getProductById,
+    createProduct
 };
