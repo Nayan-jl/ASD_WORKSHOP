@@ -1,4 +1,4 @@
-const { readFile } = require("../database/db");
+const { readFile,writeFile } = require("../database/db");
 async function getProducts() {
     let products = await readFile();
     return products;
@@ -11,7 +11,14 @@ async function getProductById(id) {
     });
     return product;
 }
+async function createProduct(product) {
+    let products = await readFile();
+    products.push(product);
+    await writeFile(products);
+    return product;
+}
 module.exports = {
     getProducts,
-    getProductById
+    getProductById,
+    createProduct
 };
