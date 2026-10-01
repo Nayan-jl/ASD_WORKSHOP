@@ -1,34 +1,81 @@
-const productService = require("../services/productService");
-async function getProducts(req, res) {
+const productService=require('../services/productService')
+const cache=require('../middleware/cacheMiddleware')
+
+async function getProducts(req,res){
     try {
-        let products = await productService.getProducts();
-        res.json(products);
-    } catch (err) {
-        console.log(err);
+        const products=await productService.getAllProducts()
+        res.json(products)
+    }catch(error){
+        console.log(error)
         res.status(500).json({
-            message: "Server error"
-        });
-    }
-}
-async function getProductById(req, res) {
-    try {
-        let product =
-            await productService.getProductById(req.params.id);
-        if (!product) {
-            return res.status(404).json({
-                message: "Product not found"
-            });
-        }
-        res.json(product);
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({
-            message: "Server error"
-        });
+            message: 'Failed to fetch products'
+        })
     }
 }
 
-module.exports = {
-    getProducts,
-    getProductById
-};
+
+async function getProductById(req,res){
+    try {
+        const id=Number(req.params.id)
+        const product=await productService.getProductById(id)
+        if (!product){
+            return res.status(404).json({
+                message: 'Product not found'
+            })
+        }
+        res.json(product)
+    } catch(error){
+        console.log(error)
+        res.status(500).json({
+            message: 'Failed to fetch product'
+        })
+    }
+}
+
+
+async function createProduct(req,res){
+    try {
+        const product=await productService.createProduct(req.body)
+        cache.clearCache()
+        res.status(201).json(product)
+    }catch(error){
+        console.log(error)
+        res.status(500).json({
+            message: 'Failed to create product'
+        })
+    }
+}
+
+
+async function updateProduct(req,res){
+    try {
+        const id=req.params.id
+        const data=req.body
+        const product=await productService.updateProduct(id,data)
+        cache.clearCache()
+        res.json(product)
+    }catch(error){
+        console.log(error)
+        res.status(500).json({
+            message: "Failed to update product"
+        })
+    }
+}
+
+
+async function deleteProduct(req,res){
+    try {
+        const id=req.params.id
+        const product=await productService.deleteProduct(id)
+        cache.clearCache()
+        res.json(product)
+    } catch(error){
+        console.log(error)
+        res.status(500).json({
+            message: "Failed to delete product"
+        })
+    }
+}
+
+
+module.exports={getProducts,getProductById,createProduct,updateProduct,deleteProduct}
