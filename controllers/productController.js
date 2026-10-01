@@ -1,5 +1,5 @@
 const productService = require("../services/productService");
-const {setCache, invalidateCache} = require("../middleware/cache");
+const {setCache,invalidateCache} = require("../middleware/cache");
 async function getProducts(req, res) {
     try {
         let products = await productService.getProducts();
@@ -32,6 +32,7 @@ async function getProductById(req, res) {
         });
     }
 }
+
 async function createProduct(req, res) {
     try {
         let product =
@@ -45,8 +46,76 @@ async function createProduct(req, res) {
         });
     }
 }
+async function updateProduct(req, res) {
+    try {
+        let product =
+            await productService.updateProduct(
+                req.params.id,
+                req.body
+            );
+        if (!product) {
+            return res.status(404).json({
+                message: "Product not found"
+            });
+        }
+        invalidateCache();
+        res.json(product);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: "Server error"
+        });
+    }
+}
+
+async function patchProduct(req, res) {
+    try {
+        let product =
+            await productService.patchProduct(
+                req.params.id,
+                req.body
+            );
+        if (!product) {
+            return res.status(404).json({
+                message: "Product not found"
+            });
+        }
+        invalidateCache();
+        res.json(product);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: "Server error"
+        });
+    }
+}
+
+async function deleteProduct(req, res) {
+    try {
+        let product =
+            await productService.deleteProduct(
+                req.params.id
+            );
+        if (!product) {
+            return res.status(404).json({
+                message: "Product not found"
+            });
+        }
+        invalidateCache();
+        res.json(product);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: "Server error"
+        });
+    }
+}
+
 module.exports = {
     getProducts,
     getProductById,
-    createProduct
+    createProduct,
+    updateProduct,
+    patchProduct,
+    deleteProduct
 };

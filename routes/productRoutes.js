@@ -1,10 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const productController =
-    require("../controllers/productController");
-const {
-    cacheMiddleware
-} = require("../middleware/cache");
+const productController = require("../controllers/productController");
+const {cacheMiddleware} = require("../middleware/cache");
 router.get(
     "/products",
     cacheMiddleware,
@@ -15,4 +12,21 @@ router.get(
     cacheMiddleware,
     productController.getProductById
 );
+router.post(
+    "/products",
+    productController.createProduct
+);
+router.put(
+    "/products/:id",
+    productController.updateProduct
+);
+router.patch(
+    "/products/:id",
+    productController.patchProduct
+);
+router.delete(
+    "/products/:id",
+    productController.deleteProduct
+);
+
 module.exports = router;
